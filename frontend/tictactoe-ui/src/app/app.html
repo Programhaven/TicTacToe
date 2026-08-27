@@ -1,0 +1,59 @@
+<div class="container" *ngIf="state">
+  <h1>Tic Tac Toe Engine</h1>
+
+  <!-- Scoreboard Panel -->
+  <div class="card scoreboard">
+    <div class="score-item">Player X: <strong>{{ state.scoreboard.xWins }}</strong></div>
+    <div class="score-item">Draws: <strong>{{ state.scoreboard.draws }}</strong></div>
+    <div class="score-item">Player O: <strong>{{ state.scoreboard.oWins }}</strong></div>
+    <button class="btn btn-alt" (click)="onResetScoreboard()">Reset Scoreboard</button>
+  </div>
+
+  <!-- Game Mode Selection & Control Bar -->
+  <div class="controls card">
+    <label>Mode: </label>
+    <button class="btn" [class.active]="state.gameMode === 'TwoPlayer'" (click)="onChangeMode('TwoPlayer')">2 Player</button>
+    <button class="btn" [class.active]="state.gameMode === 'Computer'" (click)="onChangeMode('Computer')">VS Computer</button>
+    <button class="btn" (click)="onResetGame()">Reset Game</button>
+    <button class="btn" [disabled]="isUndoDisabled()" (click)="onUndo()">Undo Move</button>
+  </div>
+
+  <!-- Turn & Status Banner -->
+  <div class="status-banner" [ngClass]="state.status.toLowerCase()">
+    <span *ngIf="state.status === 'InProgress'">Current Turn: <strong>Player {{ state.currentPlayer }}</strong></span>
+    <span *ngIf="state.status === 'Won'">Winner: <strong>Player {{ state.winner }}</strong>!</span>
+    <span *ngIf="state.status === 'Draw'">Game Ended in a <strong>Draw</strong>!</span>
+  </div>
+
+  <div class="game-layout">
+    <!-- 3x3 Grid Board -->
+    <div class="board">
+      <div *ngFor="let row of [0, 1, 2]" class="board-row">
+        <button *ngFor="let col of [0, 1, 2]" 
+                class="cell" 
+                [class.highlight]="isWinningCell(row, col)"
+                [disabled]="state.board[row][col] !== '' || state.status !== 'InProgress'"
+                (click)="onCellClick(row, col)">
+          {{ state.board[row][col] }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Move History Table -->
+    <div class="card history-panel">
+      <h3>Move History</h3>
+      <table>
+        <thead>
+          <tr><th>#</th><th>Player</th><th>Position</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let move of state.moveHistory">
+            <td>{{ move.moveNumber }}</td>
+            <td>{{ move.player }}</td>
+            <td>Row {{ move.row + 1 }}, Col {{ move.col + 1 }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

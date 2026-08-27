@@ -1,0 +1,34 @@
+<div style="background: #ffebee; padding: 8px; margin-bottom: 10px; font-family: monospace;">
+  DEBUG: isSubmitting = {{ isSubmitting }} | isGameActive = {{ isGameActive() }} | Status = {{ state?.status }}
+</div>
+
+<div class="game-container" *ngIf="state">
+  <h1>Tic Tac Toe</h1>
+
+  <!-- Turn / Status Indicator -->
+  <div class="status">
+    <h2 *ngIf="isGameActive()">Current Player: {{ state.currentPlayer }}</h2>
+    <h2 *ngIf="isWon()" class="winner-text">Winner: {{ state.winner }}! 🎉</h2>
+    <h2 *ngIf="isDraw()" class="draw-text">It's a Draw! 🤝</h2>
+  </div>
+
+  <!-- 3x3 Grid Board -->
+  <div class="board">
+    <div *ngFor="let row of state.board; let r = index" class="board-row">
+      <button 
+        *ngFor="let cell of row; let c = index" 
+        class="cell" 
+        [class.highlight]="isWinningCell(r, c)"
+        [disabled]="isSubmitting || (cell && cell.trim() !== '') || !isGameActive()"
+        (click)="makeMove(r, c)">
+        {{ cell }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <button class="reset-btn" [disabled]="isSubmitting" (click)="resetGame()">Reset Game</button>
+    <button class="undo-btn" [disabled]="isUndoDisabled() || isSubmitting" (click)="undo()">Undo Move</button>
+  </div>
+</div>
