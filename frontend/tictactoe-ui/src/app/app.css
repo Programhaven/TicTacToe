@@ -6,18 +6,46 @@
   margin-top: 40px;
 }
 
-.status {
-  margin-bottom: 20px;
+/* Two-column layout with baseline alignment */
+.game-layout {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 40px;
+}
+
+.game-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Matching header container height ensures exact line alignment */
+.header-cell {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.header-cell h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+  line-height: 1;
+  color: #000000;
 }
 
 .winner-text {
-  color: #2e7d32;
+  color: #2e7d32 !important;
 }
 
 .draw-text {
-  color: #d32f2f;
+  color: #d32f2f !important;
 }
 
+/* Board styling */
 .board {
   display: flex;
   flex-direction: column;
@@ -57,8 +85,13 @@
   background-color: #a5d6a7;
 }
 
+/* Action Controls */
 .controls {
+  display: flex;
+  gap: 12px;
   margin-top: 24px;
+  width: 100%;
+  justify-content: center;
 }
 
 .reset-btn {
@@ -70,8 +103,59 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
 }
 
-.reset-btn:hover {
+.reset-btn:hover:not(:disabled) {
   background-color: #1565c0;
+}
+
+.reset-btn:disabled {
+  background-color: #1976d2;
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Move History Column & Table - Top aligns with board top */
+.history-column {
+  width: 320px;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  overflow: hidden;
+  font-size: 0.95rem;
+}
+
+.history-table th {
+  background-color: #f8f9fa;
+  color: #212529;
+  font-weight: 700;
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 2px solid #dee2e6;
+  border-right: 1px solid #dee2e6;
+}
+
+.history-table th:last-child {
+  border-right: none;
+}
+
+.history-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #dee2e6;
+  border-right: 1px solid #dee2e6;
+  color: #333333;
+}
+
+.history-table td:last-child {
+  border-right: none;
+}
+
+.history-table tbody tr:last-child td {
+  border-bottom: none;
 }

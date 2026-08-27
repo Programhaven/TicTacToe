@@ -8,6 +8,12 @@ export interface WinningCell {
   col: number;
 }
 
+export interface MoveRecord {
+  row: number;
+  col: number;
+  player: 'X' | 'O';
+}
+
 type Mode = 'ONLINE' | 'OFFLINE';
 
 @Component({
@@ -25,10 +31,8 @@ export class App implements OnInit {
   constructor(private gameService: GameService) {}
 
   ngOnInit(): void {
-    // 1. Render local interactive board immediately
     this.initializeLocalState();
 
-    // 2. Background connection attempt
     this.gameService.createGame('TwoPlayer')
       .pipe(
         timeout(2000),
@@ -41,7 +45,7 @@ export class App implements OnInit {
       )
       .subscribe((newState) => {
         if (newState && newState.gameId) {
-          this.state = newState;
+          this.state = this.normalizeState(newState);
           this.mode = 'ONLINE';
         }
       });
@@ -67,6 +71,13 @@ export class App implements OnInit {
     this.isSubmitting = false;
   }
 
+  private normalizeState(rawState: GameStateResponse): GameStateResponse {
+    if (!rawState.moveHistory) {
+      rawState.moveHistory = [];
+    }
+    return rawState;
+  }
+
   isGameActive(): boolean {
     if (!this.state) return false;
     return this.state.status === 'InProgress' || (this.state.status as any) === 0;
@@ -89,10 +100,8 @@ export class App implements OnInit {
     const previousGameId = this.state.gameId;
     const previousPlayer = this.state.currentPlayer;
 
-    // Apply move locally immediately (never locks UI)
     this.applyLocalMove(row, col);
 
-    // Sync move to backend in background
     if (this.mode === 'ONLINE' && previousGameId) {
       this.gameService.makeMove(previousGameId, previousPlayer, row, col)
         .pipe(
@@ -105,7 +114,11 @@ export class App implements OnInit {
             return of(null);
           })
         )
-        .subscribe();
+        .subscribe((newState) => {
+          if (newState && this.mode === 'ONLINE') {
+            this.state = this.normalizeState(newState);
+          }
+        });
     }
   }
 
@@ -145,7 +158,7 @@ export class App implements OnInit {
         this.state.status = 'Won';
         this.state.winner = b[r1][c1];
         this.state.winningCells = [{row: r1, col: c1}, {row: r2, col: c2}, {row: r3, col: c3}];
-        
+
         if (b[r1][c1] === 'X') this.state.scoreboard.xWins++;
         else if (b[r1][c1] === 'O') this.state.scoreboard.oWins++;
         return;
@@ -163,24 +176,23 @@ export class App implements OnInit {
     if (this.isUndoDisabled() || !this.state) return;
 
     const previousGameId = this.state.gameId;
-
-    // 1. Instant local undo execution
     this.applyLocalUndo();
 
-    // 2. Non-blocking background sync if online
     if (this.mode === 'ONLINE' && previousGameId) {
       this.gameService.undo(previousGameId)
         .pipe(
           timeout(2000),
           take(1),
           catchError((err) => {
-            console.warn('Backend undo sync failed. Demoting to OFFLINE mode:', err);
-            this.mode = 'OFFLINE';
-            if (this.state) this.state.gameId = '';
+            console.warn('Backend undo failed:', err);
             return of(null);
           })
         )
-        .subscribe();
+        .subscribe((newState) => {
+          if (newState && this.mode === 'ONLINE') {
+            this.state = this.normalizeState(newState);
+          }
+        });
     }
   }
 
@@ -200,31 +212,27 @@ export class App implements OnInit {
 
   isUndoDisabled(): boolean {
     if (!this.state) return true;
-    const hasNoMoves = !this.state.moveHistory || this.state.moveHistory.length === 0;
-    return hasNoMoves;
+    return !this.state.moveHistory || this.state.moveHistory.length === 0;
   }
 
   resetGame(): void {
     const currentScoreboard = this.state?.scoreboard || { xWins: 0, oWins: 0, draws: 0 };
     const previousGameId = this.state?.gameId;
 
-    // 1. Instant local board clear
     this.resetLocalBoard(currentScoreboard);
 
-    // 2. Non-blocking background reset sync if online
     if (this.mode === 'ONLINE' && previousGameId) {
       this.gameService.resetGame(previousGameId)
         .pipe(
           timeout(2000),
           take(1),
-          catchError((err) => {
-            console.warn('Backend reset sync failed. Demoting to OFFLINE mode:', err);
-            this.mode = 'OFFLINE';
-            if (this.state) this.state.gameId = '';
-            return of(null);
-          })
+          catchError(() => of(null))
         )
-        .subscribe();
+        .subscribe((newState) => {
+          if (newState && this.mode === 'ONLINE') {
+            this.state = this.normalizeState(newState);
+          }
+        });
     }
   }
 
