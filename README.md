@@ -70,7 +70,7 @@ Production-ready Tic Tac Toe engine featuring strict backend state ownership, a 
 
    Bash - cd backend/TicTacToe.Tests - dotnet test
 
-   \*\*Frontend Unit Tests (Angular / Jasmine / Karma)//need to check  
+   \*\*Frontend Unit Tests (Angular /)  
     Executes frontend test coverage for UI layout rendering, computer move selection rules, service integrations, and undo interactions:
 
    Bash -cd frontend/tictactoe-ui/src/app - ng test
