@@ -1,14 +1,32 @@
 <div class="game-container">
   <div class="game-layout">
     
-    <!-- Left Column: Status, Board & Controls -->
+    <!-- Left Column: Mode Selector, Status, Scoreboard, Board & Controls -->
     <div class="game-column">
+
+      <!-- Game Mode Selector -->
+      <div class="mode-selector">
+        <label for="modeSelect"><strong>Game Mode:</strong></label>
+        <select id="modeSelect" [value]="state?.gameMode || 'TwoPlayer'" (change)="onModeChange($event)">
+          <option value="TwoPlayer">Two Player Mode</option>
+          <option value="Computer">Play Against Computer</option>
+        </select>
+      </div>
+
       <div class="header-cell">
         <h2 *ngIf="isGameActive()">Current Player: {{ state?.currentPlayer }}</h2>
         <h2 *ngIf="isWon()" class="winner-text">Winner: {{ state?.winner }}!</h2>
         <h2 *ngIf="isDraw()" class="draw-text">Game Ended in a Draw!</h2>
       </div>
 
+      <!-- Session-Level Scoreboard -->
+      <div class="scoreboard-bar" *ngIf="state?.scoreboard">
+        <div class="score-item"><span>X Wins:</span> <strong>{{ state?.scoreboard?.xWins ?? 0 }}</strong></div>
+        <div class="score-item"><span>O Wins:</span> <strong>{{ state?.scoreboard?.oWins ?? 0 }}</strong></div>
+        <div class="score-item"><span>Draws:</span> <strong>{{ state?.scoreboard?.draws ?? 0 }}</strong></div>
+      </div>
+
+      <!-- Tic Tac Toe Board -->
       <div class="board" *ngIf="state">
         <div class="board-row" *ngFor="let row of state.board; let r = index">
           <button
@@ -23,9 +41,11 @@
         </div>
       </div>
 
+      <!-- Action Controls -->
       <div class="controls">
         <button class="reset-btn" (click)="resetGame()">Reset Game</button>
         <button class="reset-btn" [disabled]="isUndoDisabled()" (click)="undo()">Undo Move</button>
+        <button class="reset-btn reset-score-btn" (click)="resetScoreboard()">Reset Scoreboard</button>
       </div>
     </div>
 

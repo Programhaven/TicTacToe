@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap, catchError, throwError } from 'rxjs';
-
+import { BehaviorSubject, Observable, tap, catchError, throwError, map } from 'rxjs';
 
 export interface CellPosition {
   row: number;
@@ -9,7 +8,7 @@ export interface CellPosition {
 }
 
 export interface MoveRecord {
-  moveNumber: number;
+  moveNumber?: number;
   player: string;
   row: number;
   col: number;
@@ -23,10 +22,12 @@ export interface Scoreboard {
 
 export interface GameStateResponse {
   gameId: string;
-  gameMode: 'TwoPlayer' | 'Computer';
+  id?: string;
+  gameMode?: 'TwoPlayer' | 'Computer';
+  mode?: 'TwoPlayer' | 'Computer';
   board: string[][];
   currentPlayer: string;
-  status: 'InProgress' | 'Won' | 'Draw';
+  status: 'InProgress' | 'Won' | 'Draw' | number;
   winner?: string;
   winningCells?: CellPosition[];
   moveHistory: MoveRecord[];
@@ -46,41 +47,61 @@ export class GameService {
   constructor(private http: HttpClient) {}
 
   /**
+   * Normalizes property casing/aliases (id vs gameId, mode vs gameMode) returned by .NET API
+   */
+  private normalizeResponse(state: GameStateResponse): GameStateResponse {
+    if (state) {
+      state.gameId = state.gameId || state.id || '';
+      state.gameMode = state.gameMode || state.mode || 'TwoPlayer';
+    }
+    return state;
+  }
+
+  /**
    * Creates a new game session on the .NET backend authority
    */
-    createGame(mode: 'TwoPlayer' | 'Computer'): Observable<GameStateResponse> {
+  createGame(mode: 'TwoPlayer' | 'Computer'): Observable<GameStateResponse> {
     return this.http.post<GameStateResponse>(`${this.apiUrl}`, { mode })
-      .pipe(tap(state => this.stateSubject.next(state)));
+      .pipe(
+        map(state => this.normalizeResponse(state)),
+        tap(state => this.stateSubject.next(state))
+      );
   }
 
   /**
    * Submits a human move to the backend engine
-  */
+   */
   makeMove(gameId: string, player: string, row: number, col: number): Observable<GameStateResponse> {
     return this.http.post<GameStateResponse>(`${this.apiUrl}/${gameId}/moves`, { player, row, col }).pipe(
-        tap(state => this.stateSubject.next(state)),
-        catchError(err => {
+      map(state => this.normalizeResponse(state)),
+      tap(state => this.stateSubject.next(state)),
+      catchError(err => {
         console.error('Failed to execute move:', err);
         return throwError(() => err);
-        })
+      })
     );
- }
-
-  /**
-   * UNDO IMPLEMENTATION:
-   * Triggers single-move rollback (2-Player) or atomic double-move rollback (VS Computer)
-   */
-  undo(gameId: string): Observable<GameStateResponse> {
-    return this.http.post<GameStateResponse>(`${this.apiUrl}/${gameId}/undo`, {})
-      .pipe(tap(state => this.stateSubject.next(state)));
   }
 
   /**
-   * Resets the active game session while preserving overall session scoreboard metrics
+   * Triggers move rollback on backend
+   */
+  undo(gameId: string): Observable<GameStateResponse> {
+    return this.http.post<GameStateResponse>(`${this.apiUrl}/${gameId}/undo`, {})
+      .pipe(
+        map(state => this.normalizeResponse(state)),
+        tap(state => this.stateSubject.next(state))
+      );
+  }
+
+  /**
+   * Resets active board state while preserving cumulative session scores
    */
   resetGame(gameId: string): Observable<GameStateResponse> {
     return this.http.post<GameStateResponse>(`${this.apiUrl}/${gameId}/reset`, {})
-      .pipe(tap(state => this.stateSubject.next(state)));
+      .pipe(
+        map(state => this.normalizeResponse(state)),
+        tap(state => this.stateSubject.next(state))
+      );
   }
 
   /**
@@ -89,12 +110,12 @@ export class GameService {
   resetScoreboard(): Observable<Scoreboard> {
     return this.http.post<Scoreboard>(`${this.scoreboardUrl}/reset`, {})
       .pipe(
-        tap(() => {
+        tap((scoreboard) => {
           const current = this.stateSubject.value;
           if (current) {
             this.stateSubject.next({
               ...current,
-              scoreboard: { xWins: 0, oWins: 0, draws: 0 }
+              scoreboard: scoreboard || { xWins: 0, oWins: 0, draws: 0 }
             });
           }
         })
