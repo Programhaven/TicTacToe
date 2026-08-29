@@ -58,13 +58,14 @@ Production-ready Tic Tac Toe engine featuring strict backend state ownership, a 
    **3.Start the Web API server:**  
     Bash - dotnet run --urls="http://localhost:5000"
 
-   Access the API documentation and Swagger UI at http://localhost:5000/swagger.
+   **4.Access the API documentation and Swagger UI at http://localhost:5000/swagger.**
 
 5. **How to Run the Frontend Locally**
 
    **Prerequisites**
 
    Node.js (v18 or higher)
+
    Angular CLI (npm install -g @angular/cli)
 
    **Execution Steps**
@@ -109,7 +110,7 @@ Production-ready Tic Tac Toe engine featuring strict backend state ownership, a 
    Executes backend test coverage for move validation, turn switching, win conditions (row, column, diagonal), draw detection,
    and state rollbacks:
 
-   Bash - cd backend/TicTacToe.Tests -> dotnet test\*\*
+   Bash - cd backend/TicTacToe.Tests -> dotnet test
 
    **Frontend Unit Tests (Angular /)**
    Executes frontend test coverage for UI layout rendering, computer move selection rules, service integrations, and undo interactions:
@@ -133,6 +134,7 @@ Production-ready Tic Tac Toe engine featuring strict backend state ownership, a 
    **Backend Authority:** The .NET API server retains exclusive ownership over game state rules, move validation, and score tracking. The Angular UI acts as a dynamic presentation layer.
 
    **Thread-Safe State Management:** Uses ConcurrentDictionary<Guid, GameSession> to store active game instances safely in server memory.
+
    **Mode-Specific Undo Rollback:** In Computer mode, clicking Undo automatically reverts both the AI's move and the human player's move to return turn control to the user.
 
    **Optimistic Local Execution:** The frontend includes an offline connection guard to ensure uninterrupted gameplay if network access to the API server is unavailable.
