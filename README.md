@@ -19,18 +19,26 @@ Production-ready Tic Tac Toe engine featuring strict backend state ownership, a 
 
 3. **Features Implemented**
 
-   **Interactive Game Board:** 3x3 grid displaying player moves with highlighted winning cells upon victory.  
+   **Interactive Game Board:** 3x3 grid displaying player moves with highlighted winning cells upon victory.
+
    **Game Modes:** Dynamic switching between Two-Player local mode and Play Against Computer mode.
+
    **Deterministic 5-Tier Computer AI:** Heuristic decision hierarchy (Win check --> Block opponent win --> Center square selection --> Opposite corner selection --> First available cell).
+
    **Real-Time Game Status:** Status messages showing the current turn, winner declarations, or draw alerts.
+
    **Session Scoreboard:** Real-time tracking of X Wins, O Wins, and Draws.
+
    **Move History Log:** Chronological table displaying move index, active player, and grid coordinates (Row, Column).
 
    **Game Action Controls:**
 
    **Reset Game:** Clears the board grid and move history while preserving session scoreboard tallies.
+
    **Undo Last Move:** Rolls back recent moves (reverts 1 move in Two-Player mode; dual-move rollback in Computer mode).
+
    **Reset Scoreboard:** Resets session win/draw tallies back to zero.
+
    **Offline Fallback Guard:** Automatically triggers in-memory local fallback if the backend API server is unreachable.
 
 4. **How to Run the Backend Locally**
@@ -79,17 +87,21 @@ Production-ready Tic Tac Toe engine featuring strict backend state ownership, a 
 
    All backend game interactions are exposed via REST endpoints hosted at http://localhost:5000:
 
-   **HTTP** **Method** **Endpoint Path Description**
+   **HTTP**&emsp; **Method**&emsp; **Endpoint Path Description**
 
-   POST /api/games Initializes a new game session (TwoPlayer or Computer).
+   POST &emsp;/api/games &emsp;Initializes a new game session (TwoPlayer or Computer).
 
-   POST /api/games/{gameId}/moves Validates and applies a move payload { player, row, col }.
+   POST &emsp; /api/games/{gameId}/moves &emsp;Validates and applies a move payload { player, row, col }.
 
-   POST /api/games/{gameId}/undo Reverts the last move step on the backend server state.
+   POST &emsp; /api/games/{gameId}/undo &emsp;Reverts the last move step on the backend server state.
 
-   POST /api/games/{gameId}/reset Resets board cells and move log without clearing session scores.
+   POST &emsp; /api/games/{gameId}/reset &emsp;Resets board cells and move log without clearing session scores.
 
-   POST /api/scoreboard/reset Resets active scoreboard win/draw counters to zero.
+   POST &emsp; /api/scoreboard/reset &emsp; Resets active scoreboard win/draw counters to zero.
+
+   GET &emsp;/api/games/{gameId} &emsp;Retrieves current game state
+
+   GET &emsp;/api/scoreboard: &emsp;Fetches active scoreboard counters.
 
 7. **How to Run Tests**
 
