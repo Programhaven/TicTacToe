@@ -110,12 +110,12 @@ Production-ready Tic Tac Toe engine featuring strict backend state ownership, a 
    Executes backend test coverage for move validation, turn switching, win conditions (row, column, diagonal), draw detection,
    and state rollbacks:
 
-   Bash - cd backend/TicTacToe.Tests -> dotnet test
+   Bash - cd backend\TicTacToe.Tests -> dotnet test
 
-   **Frontend Unit Tests (Angular /)**
+   **Frontend Unit Tests (Angular)**
    Executes frontend test coverage for UI layout rendering, computer move selection rules, service integrations, and undo interactions:
 
-   Bash -cd frontend/tictactoe-ui/src/app -> npx ng test
+   Bash -cd frontend\tictactoe-ui\src\app -> npx ng test
 
 8. **AI Tools and Prompt Summary**
 
