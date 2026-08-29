@@ -50,7 +50,7 @@ Production-ready Tic Tac Toe engine featuring strict backend state ownership, a 
    **Execution Steps**
 
    **1.Navigate to the API directory:**
-   Bash - cd backend/TicTacToe.Api
+   Bash - cd backend\TicTacToe.Api\
 
    **2.Restore package dependencies:**
    Bash - dotnet restore
