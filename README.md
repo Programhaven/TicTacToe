@@ -58,7 +58,7 @@ Production-ready Tic Tac Toe engine featuring strict backend state ownership, a 
    **3.Start the Web API server:**  
     Bash - dotnet run --urls="http://localhost:5000"
 
-   **4.Access the API documentation and Swagger UI at http://localhost:5000/swagger.**
+   **4.Access the API documentation and Swagger UI at http://localhost:5000/swagger**
 
 5. **How to Run the Frontend Locally**
 

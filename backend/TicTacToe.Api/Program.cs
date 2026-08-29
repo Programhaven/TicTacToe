@@ -20,13 +20,15 @@ builder.Services.AddSingleton<TicTacToe.Api.Services.IGameEngine, TicTacToe.Api.
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+// Enable Swagger UI unconditionally for local development
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "TicTacToe API V1");
+    c.RoutePrefix = "swagger"; // Serves UI at http://localhost:5000/swagger
+});
 
-// 2. Enable CORS middleware (MUST be placed before app.MapControllers)
+// 2. Enable CORS middleware
 app.UseCors("AllowAngular");
 
 app.UseAuthorization();
