@@ -72,7 +72,7 @@ Production-ready Tic Tac Toe engine featuring strict backend state ownership, a 
 
    **1.Navigate to the frontend directory:**
 
-   Bash - cd frontend
+   Bash - cd frontend\tictactoe-ui\src\
 
    **2.Install npm packages:**
 
@@ -80,9 +80,9 @@ Production-ready Tic Tac Toe engine featuring strict backend state ownership, a 
 
    **3.Run the Angular development server:**
 
-   Bash -ng serve
+   Bash -npm start
 
-   **4.Open a browser and navigate to http://localhost:4200.**
+   **4.Open a browser and navigate to http://localhost:4200**
 
 6. **API Endpoint Summary**
 
